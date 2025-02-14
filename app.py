@@ -3,14 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from datetime import datetime
 
-from auth.authBearer import JWTBearer
-from database.entity.userEntity import User
+from fastapi.security import OAuth2PasswordBearer
+from database.entity.user_entity import User
 from database.collections import init_db
-from middlewares.errorException import custom_exception_handler
+from middlewares.error_exception import custom_exception_handler
 
 from routes.user import user as userRouter
 from routes.auth import auth as authRouter
-from util.ResponseSchema import successResponse
+from routes.service1 import service1 as service1Router
+from routes.service2 import service2 as service2Router
+from util.response_schema import success_response
 
 app = FastAPI()
 
@@ -33,15 +35,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-get_token_header = JWTBearer()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 deployedTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 @app.get('/')
 async def index():
-    return successResponse("Welcome to FastAPI", {
+    return success_response("Welcome to FastAPI", {
         "deployedTime": deployedTime
     })
 
-app.include_router(authRouter, tags=['auth'], prefix='/auth')
-app.include_router(userRouter, tags=['user'], prefix='/users' , dependencies=[Depends(get_token_header)])
+app.include_router(authRouter, tags=['auth'], prefix='/api/v1/auth')
+app.include_router(userRouter, tags=['user'], prefix='/api/v1/users')
+app.include_router(service1Router, tags=['service1'], prefix='/api/v1/service1')
+app.include_router(service2Router, tags=['service2'], prefix='/api/v1/service2')

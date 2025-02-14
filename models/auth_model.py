@@ -5,13 +5,17 @@ class UserRegisterSchema(BaseModel):
     username: str = Field(...)
     email: EmailStr = Field(...)
     password: str = Field(...)
+    firstname: str = Field(...)
+    lastname: str = Field(...)
 
     class Config:
         schema_extra = {
             "example": {
                 "username": "user1",
                 "email": "user@test.com",
-                "password": "weakpassword"
+                "password": "weakpassword",
+                'firstname': 'firstname',
+                'lastname': 'lastname'
             }
         }
 
